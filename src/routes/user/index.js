@@ -13,10 +13,11 @@ router.route('/')
     try{
       const newUserData = req.body;
       const newUser = new User(newUserData);
+      newUser.isNew = true;
       const saveResult = await newUser.save();
-      res.send(newUser);
+      res.send(saveResult);
     } catch(err) {
-      console.error('', err);
+      console.error(err);
       if(err.code = 11000) {
         return res.status(400).send('username or email already exists')
       }
@@ -80,7 +81,7 @@ router.route('/:id')
       try {
         const results = await User.findByIdAndUpdate(
           {_id: new Types.ObjectId(userId)},
-          {$push: {friends: new Types.ObjectId(friendId)}}
+          {$addToSet: {friends: new Types.ObjectId(friendId)}}
         )
 
         return res.send('success')
